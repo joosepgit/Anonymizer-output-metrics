@@ -30,13 +30,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Set pythonpath
       run: |
-        whoami
-        echo $HOME
         echo "PYTHONPATH=${PWD%/*}" >> $GITHUB_ENV
-        echo $PYTHONPATH
-        echo $PWD
-        printenv
     - name: Test with pytest
       run: |
-        echo $PWD
         coverage run --source . -m pytest tests/ && coverage report -m
