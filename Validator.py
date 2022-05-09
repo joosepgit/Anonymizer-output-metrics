@@ -115,4 +115,4 @@ if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
     validator = Validator('inp/indata.csv', 
                      'inp/outdata.csv', populateConfigFromFile(os.path.join('inp', 'conf.txt')))
-    print(validator.analyzeAndValidate())
+    print(validator.analyzeAndValidate()[1])

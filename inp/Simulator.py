@@ -28,6 +28,5 @@ def getSepNaive(path):
         fst_line = f.readline().strip()
         for s in potential_separators:
             if len(fst_line.split(s)) > 1:
-                logging.warning(f'found sep {s}!!!!!!!!!!')
                 return s
     raise RuntimeError('Could not detect a separator for csv file at {0}'.format(path))
