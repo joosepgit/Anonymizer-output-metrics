@@ -1,4 +1,4 @@
-# Anonymizer-output-metrics
+# Anonymizer output validation
 This project acts as a separate software component that can be integrated into larger anonymization tools. The main purpose is to measure the quality of anonymization in terms of analyzing the remaining risks and changes in the output dataset. Some calculations rely on comparing the raw input dataset to the presumably anonymized output dataset. The metrics implemented assume that the anonymization has been performed using hierarchy based generalization techniques and at least either k-anonymization or l-diversity has been enforced as the main privacy model. It can be used with either the input or the output dataset, both are not assumed for the software to work. However as some operations rely on comparison, results may be much less meaningful using only one dataset.
 
 The project was created as a practical part of my bachelor's thesis and is therefore publicly available for use under the MIT license. Further development is encouraged!
