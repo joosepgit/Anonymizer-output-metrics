@@ -31,7 +31,9 @@ jobs:
     - name: Set pythonpath
       run: |
         echo $PWD
+        ls -la
         export PYTHONPATH=$PWD
+        echo $PYTHONPATH
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
