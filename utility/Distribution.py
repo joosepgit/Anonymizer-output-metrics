@@ -59,8 +59,8 @@ class Distribution:
             # Visibility and understandability largely disappears when we have
             # more than 100 values. Visualisation of the distribution still helps.
             plt.xticks(rotation=90)
-            if len(counts) > 100:
-                logging.info(f'Could not display xticks for column {col} due to it having > 100 nominal values')
+            if len(counts) > 40:
+                logging.info(f'Could not display xticks for column {col} due to it having > 40 distinct nominal values')
                 plt.xticks([])
             ax.bar(types, counts)
             plt.ylabel('Records affected [%]')

@@ -58,8 +58,12 @@ class PrivacyModelVerifier:
         '''Computes privacy model values and detects
         violations.'''
         pvmDict = dict()
-        pvmDict[PR_K] = self.kAnonymityFindIllegal()
-        pvmDict[PR_XY], pvmDict[PR_L] = self.checkLDiversityAndFindIllegal()
+        if not self.qiQueryHelper.quasiIdentifyingColumns:
+            raise RuntimeError('Unable to verify privacy models, quasi-identifying columns not specified.')
+        
+        if self.outDataDf is not None:
+            pvmDict[PR_K] = self.kAnonymityFindIllegal()
+            pvmDict[PR_XY], pvmDict[PR_L] = self.checkLDiversityAndXYAnonymityAndFindIllegal()
         return pvmDict
 
 
@@ -89,26 +93,26 @@ class PrivacyModelVerifier:
             clause = self.qiQueryHelper.dictToQueryString(self.qiQueryHelper.AND, ' = ', rowdict)
             violations[clause] = local_k
             i += 1
-            rowdict = dict(eqClassesSizesDf.iloc[i])
+            try:
+                rowdict = dict(eqClassesSizesDf.iloc[i])
+            except:
+                logging.warning('All equivalence classes violate K!')
+                break
         return [self.trueMinK, violations]
 
 
     # Equivalence class level l-diversity
-    def checkLDiversityAndFindIllegal(self) -> list:
+    def checkLDiversityAndXYAnonymityAndFindIllegal(self) -> list:
         '''Detects and returns the smallest l value across the anonymized dataset
         and all cominations of QID that violate the l-diversity privacy model
         imposed by the configuration file.'''
-
-        if not self.qiQueryHelper.sensitiveColumns:
-            logging.warning('No sensitive attributes specified, skipping l-diversity check.')
-            return [0, dict()]
-        
-        logging.info('Computing minimum l-diversity and gathering QID tuples violation configuration parameters.')
 
         df = self.outDataDf
         eqClassesSizesDf = duckdb.query(f'''SELECT DISTINCT {self.qiQueryHelper.quasiIdentifyingColumns}, count(*) as {K_ANONYMITY} FROM df 
                             GROUP BY {self.qiQueryHelper.quasiIdentifyingColumns} ORDER BY {K_ANONYMITY} ASC''').to_df()
         resdictL = dict()
+        lResult = [0, resdictL]
+
         XYViolations = dict()
 
         doXYAnalysis = self.checkXYAnonymityComputable()
@@ -124,14 +128,15 @@ class PrivacyModelVerifier:
             eqclassdf = duckdb.query(f'''SELECT * FROM df WHERE {clause}''').to_df()
             
             # Calculate L and violations
-            currdictL = dict()
-            for col in self.qiQueryHelper.commaSeparatedColumnsAsList(self.qiQueryHelper.sensitiveColumns):
-                currunique = len(list(eqclassdf[col].unique()))
-                trueMinL = min(trueMinL, currunique)
-                if currunique < self.confMinL:
-                    currdictL[col] = currunique
-            if currdictL:
-                resdictL[clause] = currdictL
+            if self.qiQueryHelper.sensitiveColumns:
+                currdictL = dict()
+                for col in self.qiQueryHelper.commaSeparatedColumnsAsList(self.qiQueryHelper.sensitiveColumns):
+                    currunique = len(list(eqclassdf[col].unique()))
+                    trueMinL = min(trueMinL, currunique)
+                    if currunique < self.confMinL:
+                        currdictL[col] = currunique
+                if currdictL:
+                    resdictL[clause] = currdictL
 
             # Calculate XY and violations
             if doXYAnalysis[0]:
@@ -144,8 +149,10 @@ class PrivacyModelVerifier:
 
         if XYViolations:
             xyResult = [trueMinXY, XYViolations]
+        if self.qiQueryHelper.sensitiveColumns and trueMinL < float('inf'):
+            lResult[0] = trueMinL
 
-        return [xyResult, [trueMinL, resdictL]]
+        return [xyResult, lResult]
 
 
     # Individual level k-anonymity (requires non-suppressed identifying column)
@@ -162,13 +169,15 @@ class PrivacyModelVerifier:
 
         df = self.outDataDf
         distinctIdCount = duckdb.query(f'''SELECT count(DISTINCT {identifyingColumn}) FROM df''').fetchall()
-        if distinctIdCount:
+        if distinctIdCount and distinctIdCount[0][0] > 0:
             distinctIdCount = distinctIdCount[0][0]
             if distinctIdCount == df.shape[0]:
                 logging.info('Record level k-anonymity is equal to individual level, as all identifying attributes are unique.')
                 return False, None
         else:
-            logging.info('Unable to calculate individual level k-anonymity, could not fetch unique identifying attribute count.')
+            logging.info('''Unable to calculate individual level k-anonymity, 
+                        could not fetch unique identifying attribute count or
+                        identifying attribute contains null values.''')
             return False, None
         
         return True, identifyingColumn

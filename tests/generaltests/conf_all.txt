@@ -1,0 +1,11 @@
+[Main]
+input_file = general_input_test1.csv
+id_columns = id
+qi_columns = patient_gender, patient_birthdate, patient_ehak_code
+sa_columns =
+
+[ARX]
+suppressionlimit = 1.0
+kanonymity = 5
+ldiversity = 1
+localiterationnumber = 100

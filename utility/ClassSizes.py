@@ -1,3 +1,4 @@
+from xdrlib import ConversionError
 import pandas as pd
 import logging
 import duckdb
@@ -37,8 +38,10 @@ class ClassSizes:
     def compute(self) -> dict:
         '''Computes equivalence class statistics for both datasets.'''
         eqDict = dict()
-        eqDict[EQ_INPUT] = self.computeInput()
-        eqDict[EQ_OUTPUT] = self.computeOutput()
+        if not self.qiQueryHelper.quasiIdentifyingColumns:
+            raise RuntimeError('Unable to compute equivalence class statistics, quasi-identifying columns not specified.')
+        eqDict[EQ_INPUT] = self.computeInput() if self.inDataDf is not None else dict()
+        eqDict[EQ_OUTPUT] = self.computeOutput() if self.outDataDf is not None else dict()
         return eqDict
 
 
@@ -82,20 +85,33 @@ class ClassSizes:
         eqClassesSizesDf = duckdb.query(f'''SELECT DISTINCT {self.qiQueryHelper.quasiIdentifyingColumns}, count(*) as {K_ANONYMITY} FROM df 
                             GROUP BY {self.qiQueryHelper.quasiIdentifyingColumns} ORDER BY {K_ANONYMITY} DESC''').to_df()
         nrOfEqClasses = eqClassesSizesDf.shape[0]
+
+        if nrOfEqClasses == 0:
+            inout = 'Input' if indata else 'Output'
+            raise RuntimeError(f'{inout} dataset has no rows!')
+
         avgEcWithAllsuppressed = round(nrOfRows / nrOfEqClasses, 3)
 
         suppressedClassSize = None
         if not indata:
             ALLBLIND = self.qiQueryHelper.ALLBLIND
-            suppressedClassSize = duckdb.query(f'''SELECT {K_ANONYMITY} FROM eqClassesSizesDf WHERE {ALLBLIND} ''').fetchall()
-
+            # Can throw a runtime exception when non-string column has no suppressed values.
+            # This means the suppressed class size is 0, but we can keep going.
+            try:
+                suppressedClassSize = duckdb.query(f'''SELECT {K_ANONYMITY} FROM eqClassesSizesDf WHERE {ALLBLIND} ''').fetchall()
+            except RuntimeError as e:
+                logging.warning(str(e))
+                suppressedClassSize = 0
         
         if not suppressedClassSize:
             suppressedClassSize = 0
+            formula = nrOfEqClasses
         else:
             suppressedClassSize = suppressedClassSize[0][0]
-        
-        avgEcWithoutAllsuppressed = round((nrOfRows-suppressedClassSize) / (nrOfEqClasses-1), 3)
+            formula = nrOfEqClasses-1
+
+        divisor = formula if nrOfEqClasses > 1 else 1
+        avgEcWithoutAllsuppressed = round((nrOfRows-suppressedClassSize) / divisor, 3)
 
         return (avgEcWithAllsuppressed, avgEcWithoutAllsuppressed, suppressedClassSize, eqClassesSizesDf.shape[0])
 

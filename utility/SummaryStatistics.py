@@ -70,16 +70,24 @@ class SummaryStatistics:
         outDict[SS_MODES] = self.nonblindModesPerColumn(self.outDataDf, list(self.outDataDf.columns))
         # suppressed values per column
         outDict[SS_SUP] = self.suppressedValuesPerColumn()
-        # Generalized or suppressed values per column and total (0, 1)
-        changestats = self.extractChangedValueStats()
-        outDict[SS_GENSUP] = changestats[0]
         outDict[SS_INFORMATIVE] = dict([(col, (self.outDataDf.shape[0] - blinds[0])) for col, blinds in outDict[SS_SUP].items()])
-        # Total modified values (generalized or suppressed)
-        totalValuesInDf = self.outDataDf.shape[0] * len(self.outDataDf.columns)
-        outDict[SS_TOTAL_GENSUP] = [changestats[1], str(round(changestats[1]/totalValuesInDf*100, 3)) + ' %']
-        # Total suppressed values
-        outDict[SS_TOTAL_SUP] = (lambda x : [x, str(round(x/totalValuesInDf*100, 3)) + ' %'])(sum(list(map(lambda x: x[1][0], outDict[SS_SUP].items()))))
-        outDict[SS_SUP_OF_CHANGED] = str(round(outDict[SS_TOTAL_SUP][0]/outDict[SS_TOTAL_GENSUP][0]*100, 3)) + ' %'
+
+        if self.inDataDf is not None:
+            # Generalized or suppressed values per column and total (0, 1)
+            changestats = self.extractChangedValueStats()
+            outDict[SS_GENSUP] = changestats[0]
+            # Total modified values (generalized or suppressed)
+            totalValuesInDf = self.outDataDf.shape[0] * len(self.outDataDf.columns)
+            outDict[SS_TOTAL_GENSUP] = [changestats[1], str(round(changestats[1]/totalValuesInDf*100, 3)) + ' %']
+            # Total suppressed values
+            outDict[SS_TOTAL_SUP] = (lambda x : [x, str(round(x/totalValuesInDf*100, 3)) + ' %'])(sum(list(map(lambda x: x[1][0], outDict[SS_SUP].items()))))
+            outDict[SS_SUP_OF_CHANGED] = str(round(outDict[SS_TOTAL_SUP][0]/outDict[SS_TOTAL_GENSUP][0]*100, 3)) + ' %'
+        else:
+            outDict[SS_GENSUP] = dict()
+            outDict[SS_TOTAL_GENSUP] = [0,'0 %']
+            outDict[SS_TOTAL_SUP] = [0,'0 %']
+            outDict[SS_SUP_OF_CHANGED] = '0 %'
+
         return outDict
     
 
@@ -107,7 +115,7 @@ class SummaryStatistics:
         suppressed per column.'''
 
         init = dict(self.outDataDf.isin([self.qiQueryHelper.blindSymbol]).sum(axis=0))
-        values = dict([(key, [value, str((round(100*(value/self.outDataDf.shape[0]), 1))) + '%']) for key, value in init.items()])
+        values = dict([(key, [value, str((round(100*(value/self.outDataDf.shape[0]), 1))) + ' %']) for key, value in init.items()])
         return values
 
 

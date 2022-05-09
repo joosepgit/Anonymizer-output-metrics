@@ -10,6 +10,7 @@ from numpyencoder import NumpyEncoder
 from output_validation.inp.Simulator import populateConfigFromFile
 import logging, time, json
 import pandas as pd
+import os
 
 class Validator:
 
@@ -30,18 +31,18 @@ class Validator:
         jsonDict = dict()
 
         if not self.qiQueryHelper.quasiIdentifyingColumns:
-            logging.warning('No QID columns specified. Skipping output validation.')
+            logging.warning('No QID columns specified. Skipped output validation.')
+            return json.dumps(jsonDict)
+
+        if self.confMinK is None and self.confMinL is None:
+            logging.warning('Privacy model configuration unspecified. Skipped output validation.')
             return json.dumps(jsonDict)
 
         summaryStats = SummaryStatistics(self.inDataDf, self.outDataDf, self.qiQueryHelper).compute()
         equivalenceClassStats = ClassSizes(self.inDataDf, self.outDataDf, self.qiQueryHelper).compute()
 
         trueMinK = equivalenceClassStats[EQ_OUTPUT][EQ_SMALLEST]
-        if self.confMinK is not None and self.confMinL is not None:
-            privacyStats = PrivacyModelVerifier(self.confMinK, trueMinK, self.confMinL, self.outDataDf, self.qiQueryHelper).compute()
-        else:
-            privacyStats = dict()
-            logging.info('Skipping privacy model verification as configuration values are not of expected form.')
+        privacyStats = PrivacyModelVerifier(self.confMinK, trueMinK, self.confMinL, self.outDataDf, self.qiQueryHelper).compute()
 
         jsonDict[PRIVACY_VERIFICATION] = privacyStats
         jsonDict[SUMMARY_STATISTICS] = summaryStats
@@ -60,7 +61,7 @@ class Validator:
         spent = time.time()-start
         logging.info('Analyzed and validated output in %s seconds', spent)
         
-        return json.dumps(jsonDict,
+        return jsonDict, json.dumps(jsonDict,
                     cls=NumpyEncoder, 
                     indent=4, 
                     sort_keys=True,
@@ -85,10 +86,10 @@ class Validator:
             logging.warning('''Output data read failed. Skipping analysis for output.
             If output analysis is desired, make sure the file path was specified
             correctly.''')
-            inDataDf = None
+            outDataDf = None
 
         if inDataDf is None and outDataDf is None:
-            raise ValueError('''Module is unable to produce meaningful output without input data. 
+            raise ValueError('''Module is unable to produce meaningful output without proper input data. 
                                 Please provide either input or output data or both.''')
 
         return inDataDf, outDataDf
@@ -113,5 +114,5 @@ if __name__ == '__main__':
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
     validator = Validator('inp/indata.csv', 
-                     'inp/outdata.csv', populateConfigFromFile())
+                     'inp/outdata.csv', populateConfigFromFile(os.path.join('inp', 'conf.txt')))
     print(validator.analyzeAndValidate())

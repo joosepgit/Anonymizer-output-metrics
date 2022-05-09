@@ -3,7 +3,8 @@ from output_validation.utils.QiQuery import QiQuery
 
 class TestQiQuery:
 
-    def test_init(self):
+
+    def testInit(self):
         qiQ_1 = QiQuery('','','','*')
         assert not qiQ_1.identifyingColumns
         assert not qiQ_1.quasiIdentifyingColumns
@@ -27,7 +28,7 @@ class TestQiQuery:
         assert qiQ_3.NOBLIND == "qid IS DISTINCT FROM '*'"
 
 
-    def test_string_to_list(self):
+    def testStringToList(self):
         qiQ_1 = QiQuery('id','qid','sens','x')
         expected1 = ['first', 'second', 'third', 'fourth']
         liststring1 = '             first,  second       , third, fourth  '
@@ -55,7 +56,7 @@ class TestQiQuery:
         assert expected5 == computed5
 
 
-    def test_qi_query_build(self):
+    def testQiQueryBuild(self):
         qiQ_1 = QiQuery('','','','')
         expected1 = ''
         computed1 = qiQ_1.createQueryString(qiQ_1.AND, ' > 1')
@@ -71,7 +72,7 @@ class TestQiQuery:
         assert expected3 == computed3
 
 
-    def test_dict_to_query(self):
+    def testDictToQUery(self):
         qiQ_1 = QiQuery('','','','')
         mydict1 = {'key1' : 5, 'key2' : 1203924, 'key3': -59.01}
         expected1 = 'key1 = 5 OR key2 = 1203924 OR key3 = -59.01'
