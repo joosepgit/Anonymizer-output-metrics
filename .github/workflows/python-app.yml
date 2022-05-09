@@ -38,6 +38,7 @@ jobs:
         echo $PYTHONPATH
         cd output_validation
         echo $PWD
+        printenv
     - name: Test with pytest
       working-directory: $PWD
       run: |
