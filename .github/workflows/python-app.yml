@@ -32,7 +32,7 @@ jobs:
       run: |
         whoami
         echo $HOME
-        export PYTHONPATH=${PWD%/*}
+        echo "PYTHONPATH=${PWD%/*}" >> $GITHUB_ENV
         echo $PYTHONPATH
         echo $PWD
         printenv
