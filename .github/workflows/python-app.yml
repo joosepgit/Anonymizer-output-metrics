@@ -35,6 +35,7 @@ jobs:
         echo $HOME
         mv Anonymizer-output-metrics/ output_validation/
         export PYTHONPATH=$PWD
+        export GITHUB_WORKSPACE=$PWD/output_validation/
         echo $PYTHONPATH
         cd output_validation
         echo $PWD
