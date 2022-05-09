@@ -39,5 +39,7 @@ jobs:
         cd output_validation
         echo $PWD
     - name: Test with pytest
+      working-directory: $PWD
       run: |
+        echo $PWD
         coverage run -m pytest -vv tests/ && coverage report -m
