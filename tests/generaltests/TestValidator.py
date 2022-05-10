@@ -5,8 +5,8 @@ import pandas as pd
 import configparser
 from output_validation.utils.Constants import *
 from output_validation.Validator import Validator
-from output_validation.inp.Simulator import populateConfigFromFile
-from output_validation.inp.Simulator import getSepNaive
+from output_validation.input.Simulator import populateConfigFromFile
+from output_validation.input.Simulator import getSepNaive
 
 class TestValidator:
 

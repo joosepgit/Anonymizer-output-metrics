@@ -1,0 +1,11 @@
+[Main]
+input_file = indata.csv
+id_columns = Patsient
+qi_columns = Kp, Dgn
+sa_columns = Hind
+
+[ARX]
+suppressionlimit = 1.0
+kanonymity = 3
+ldiversity = 3
+localiterationnumber = 100

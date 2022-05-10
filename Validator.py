@@ -5,12 +5,12 @@ from output_validation.utility.ClassSizes import ClassSizes
 from output_validation.utility.Distribution import Distribution
 from output_validation.utils.QiQuery import QiQuery
 from output_validation.utils.Constants import *
-from output_validation.inp.Simulator import getSepNaive
+from output_validation.input.Simulator import getSepNaive
 from numpyencoder import NumpyEncoder
-from output_validation.inp.Simulator import populateConfigFromFile
+from output_validation.input.Simulator import populateConfigFromFile
 import logging, time, json
 import pandas as pd
-import os
+import argparse
 
 class Validator:
 
@@ -41,7 +41,7 @@ class Validator:
         summaryStats = SummaryStatistics(self.inDataDf, self.outDataDf, self.qiQueryHelper).compute()
         equivalenceClassStats = ClassSizes(self.inDataDf, self.outDataDf, self.qiQueryHelper).compute()
 
-        trueMinK = equivalenceClassStats[EQ_OUTPUT][EQ_SMALLEST]
+        trueMinK = 0 if not equivalenceClassStats[EQ_OUTPUT] else equivalenceClassStats[EQ_OUTPUT][EQ_SMALLEST]
         privacyStats = PrivacyModelVerifier(self.confMinK, trueMinK, self.confMinL, self.outDataDf, self.qiQueryHelper).compute()
 
         jsonDict[PRIVACY_VERIFICATION] = privacyStats
@@ -113,6 +113,14 @@ class Validator:
 if __name__ == '__main__':
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
-    validator = Validator('inp/indata.csv', 
-                     'inp/outdata.csv', populateConfigFromFile(os.path.join('inp', 'conf.txt')))
-    print(validator.analyzeAndValidate()[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input')
+    parser.add_argument('-o', '--output')
+    parser.add_argument('-c', '--config', required=True)
+    args = parser.parse_args()
+    if not (args.input or args.output):
+        print('Either input, output or both input and output is required!')
+        print('Please specify the input file path with -i/--input and/or the output file with -o/--output')
+    else:
+        validator = Validator(args.input, args.output, populateConfigFromFile(args.config))
+        print(validator.analyzeAndValidate()[1])

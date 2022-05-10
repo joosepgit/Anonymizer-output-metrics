@@ -65,8 +65,8 @@ class AttackerModelStatistics:
         '''Computes the risk overview and generates
         risk analysis gauge charts for both datasets.'''
         resDict = dict()
-        resDict[AR_INPUT] = self.computeInput()
-        resDict[AR_OUTPUT] = self.computeOutput()
+        resDict[AR_INPUT] = self.computeInput() if self.inDataDf is not None else dict()
+        resDict[AR_OUTPUT] = self.computeOutput() if self.outDataDf is not None else dict()
         return resDict
 
 

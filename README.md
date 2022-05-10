@@ -26,7 +26,7 @@ $ cd output_validation
 ```
 $ pip install -r requirements.txt
 ```
-5. Add some input data to the inp/ directory, by default indata.csv and outdata.csv are looked for. 
+5. Add some input data to the input/ directory, by default indata.csv and outdata.csv are looked for. 
 Additionally, the configuration file conf.txt should be modified according to the privacy models and
 anonymization methods used.
 6. Run the code

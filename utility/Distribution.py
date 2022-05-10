@@ -37,8 +37,10 @@ class Distribution:
 
     def generate(self) -> None:
         '''Generates distribution plots for both datasets.'''
-        self.generateDistributionPlots(self.inDataDf, IN)
-        self.generateDistributionPlots(self.outDataDf, OUT)
+        if self.inDataDf is not None:
+            self.generateDistributionPlots(self.inDataDf, IN)
+        if self.outDataDf is not None:
+            self.generateDistributionPlots(self.outDataDf, OUT)
 
 
     def generateDistributionPlots(self, df, inOut) -> None:
