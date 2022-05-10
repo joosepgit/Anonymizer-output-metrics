@@ -1,8 +1,8 @@
 [Main]
 input_file = indata.csv
-id_columns = Patsient
-qi_columns = Kp, Dgn
-sa_columns = Hind
+id_columns = id
+qi_columns = date, dgn
+sa_columns = costs, doctor
 
 [ARX]
 suppressionlimit = 1.0

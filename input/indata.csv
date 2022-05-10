@@ -1,0 +1,19 @@
+id,date,dgn,doctor,somevalue,costs
+1,2001-10-01,J09.5,Dr.Ford,Xxx,10.8
+2,2001-10-02,J09.6,broken_doctorvalue123,Yyy,2.5
+3,2001-10-03,J09,Dr.Martin,Zzz,2.5
+4,2021-09-01,I12.4,Dr.Johnson,villem,1088888888
+5,2021-08-01,G62.3,Valerie,oskar,2.5
+6,2021-12-31,I17.1,Jacob,aadu,1.00
+7,2021-01-01,H18,Drname,peedu,5.4
+8,1980-01-01,O80,Dr.Herman,maali,	
+9,1984-01-01,O80,Dr.Altmann,liimi,ABC
+10,1988-01-01,O80,Dr.Brown,Iseeneslik e spontaanne üksiksünnitus,-
+11,2021-06-15,E11,Dr.Evans,Hind RGSDF tel,52222222
+12,2015-10-01,C00.9,Dr.Nord,Xxx,10.8
+13,2015-10-09,C00.6,broken_doctocvalue123,Yyy,14.3
+14,2015-10-31,C00,Dr.Martin,Zzz,2.5
+15,1998-09-01,I12.4,Dr.Wilder,villem,1088888888
+17,1998-08-01,G62.3,Monroe,oskar,2.5
+17,1998-12-31,I17.1,DockOck,aadu,1.00
+17,1998-01-01,H18,Drname53,peedu,5.4
