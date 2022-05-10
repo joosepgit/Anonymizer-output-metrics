@@ -3,14 +3,35 @@ This project acts as a separate software component that can be integrated into l
 
 The project was created as a practical part of my bachelor's thesis and is therefore publicly available.
 
-# Local setup
-1. Clone the project into some arbitrary location.
-2. Set the PYTHONPATH environment variable to the parent directory, where the projects root directory is.
-For example say that you cloned the project into a folder '~/projects/'. Then you would have the projects
-root directory 'output_validation' in your projects folder. In order for Python to find modules correctly
-you would have to set PYTHONPATH equal to ~/projects/, **not ~/projects/output_validation/**.
-Assuming that the directory projects exists in your users home directory,
-in linux distributions, this can be done using the following command:
+# Local setup (tested on Ubuntu 20.04 LTS)
+0. Create a directory called projects in your user home directory (Recommended if you are unsure where to clone it). Navigate into the directory before cloning.
+1. Clone the project into some arbitrary location (or the created projects directory).
+2. Install Python 3.8.10. (https://www.python.org/downloads/release/python-3810/)
+3. Create a Python virtual environment:
+Run the following command in the directory where you cloned this project **not in the projects root directory, but one directory above**.
+```
+~/projects$ python -m venv environment
+```
+A directory named environment is then generated.
+5. Activate the environment
+on linux based systems
+```
+~/projects$ source environment/bin/activate
+```
+or, if you have an existing conda installation
+```
+~/projects$ conda environment/bin/activate
+```
+or, on windows
+```
+C:\Users\Joosep\projects> environment\Scripts\activate.bat
+```
+
+After this step, your command line should look something like this:
+(environment) jtavits@DESKTOP-XXXXXXX:~/projects$
+
+6. Set the PYTHONPATH environment variable to point to the current working directory.
+In order for Python to find modules correctly in linux based systems run the following command:
 ```
 $ export PYTHONPATH=$HOME/projects
 ```
@@ -18,29 +39,33 @@ And in windows, this can be done through administrator powershell using the foll
 ```
 $env:PYTHONPATH = C:\Users\<youruser>\projects
 ```
-3. Navigate into the projects root folder
+7. Navigate into the projects root folder
 ```
 $ cd output_validation
 ```
-4. Install the necessary requirements
+8. Install the necessary requirements
 ```
-$ pip install -r requirements.txt
+$ python -m pip install -r requirements.txt
 ```
-5. Add some input data to the input/ directory, by default indata.csv and outdata.csv are looked for. 
-Additionally, the configuration file conf.txt should be modified according to the privacy models and
-anonymization methods used.
-6. Run the code
+9. (OPTIONAL) Investigate the default input files and the input subdirectory. There are three files:
+indata.csv, outdata.csv and conf.txt. The program can run with either input or output file only. It
+cannot run without the configuration file or when nothing other than the configuration file is passed.
+The program takes arguments as command line parameters, -i for input, -o for output and -c for the
+configuration file. All of these parameters are expected to be paths to the desired files.
+10. Run the code with default test data and configuration
 ```
-$ python Validator.py
+~/projects/output_validation$ python Validator.py -i input/indata.csv -o input/outdata.csv -c input/conf.txt
 ```
 
 
 That's it on running the program with custom input. Additionally, there are tests that can be run
 using the pytest framework. For simply running the test, run
 ```
-$ pytest -v tests/
+$ pytest -vv tests/
 ```
 For running all tests with code coverage, run
 ```
-$ coverage run --source . -m pytest -v tests/ && coverage report -m
+$ coverage run --source . -m pytest -vv tests/ && coverage report -m
 ```
+
+Happy testing.
