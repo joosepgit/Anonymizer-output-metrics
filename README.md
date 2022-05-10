@@ -13,7 +13,7 @@ Run the following command in the directory where you cloned this project **not i
 ~/projects$ python -m venv environment
 ```
 A directory named environment is then generated.
-5. Activate the environment
+4. Activate the environment
 on linux based systems
 ```
 ~/projects$ source environment/bin/activate
@@ -30,7 +30,7 @@ C:\Users\Joosep\projects> environment\Scripts\activate.bat
 After this step, your command line should look something like this:
 (environment) jtavits@DESKTOP-XXXXXXX:~/projects$
 
-6. Set the PYTHONPATH environment variable to point to the current working directory.
+5. Set the PYTHONPATH environment variable to point to the current working directory.
 In order for Python to find modules correctly in linux based systems run the following command:
 ```
 $ export PYTHONPATH=$HOME/projects
@@ -39,22 +39,22 @@ And in windows, this can be done through administrator powershell using the foll
 ```
 $env:PYTHONPATH = C:\Users\<youruser>\projects
 ```
-7. Navigate into the projects root folder
+6. Navigate into the projects root folder
 ```
 $ cd output_validation
 ```
-8. Install the necessary requirements
+7. Install the necessary requirements
 ```
 $ python -m pip install -r requirements.txt
 ```
-9. (OPTIONAL) Investigate the default input files and the input subdirectory. There are three files:
+8. (OPTIONAL) Investigate the default input files and the input subdirectory. There are three files:
 indata.csv, outdata.csv and conf.txt. The program can run with either input or output file only. It
 cannot run without the configuration file or when nothing other than the configuration file is passed.
 The program takes arguments as command line parameters, -i for input, -o for output and -c for the
 configuration file. All of these parameters are expected to be paths to the desired files.
-10. Run the code with default test data and configuration
+9. Run the code with default test data and configuration
 ```
-~/projects/output_validation$ python Validator.py -i input/indata.csv -o input/outdata.csv -c input/conf.txt
+$ python Validator.py -i input/indata.csv -o input/outdata.csv -c input/conf.txt
 ```
 
 
