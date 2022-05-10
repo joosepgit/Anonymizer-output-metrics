@@ -28,7 +28,9 @@ C:\Users\Joosep\projects> environment\Scripts\activate.bat
 ```
 
 After this step, your command line should look something like this:
+```
 (environment) jtavits@DESKTOP-XXXXXXX:~/projects$
+```
 
 5. Set the PYTHONPATH environment variable to point to the current working directory.
 In order for Python to find modules correctly in linux based systems run the following command:
